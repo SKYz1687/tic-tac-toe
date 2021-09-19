@@ -18,11 +18,19 @@ public class GridSpace : MonoBehaviour {
     //     gameController = controller;
     // }
 
-    public void SetSpace () {
-        int playerSide = gameController.GetPlayerSide ();
-
-        buttontext.text = (playerSide == 1) ? "X" : "O";
-        button.interactable = false;
-        gameController.EndTurn ();
+    public void SetSpace (int slot_number) {
+        
+        bool result = gameController.SetMap(slot_number);
+        if(result)
+        {
+            int playerSide = gameController.GetPlayerSide();
+            buttontext.text = (playerSide == 1) ? "X" : "O";
+            button.interactable = false;
+            gameController.EndTurn();
+        }
+        else
+        {
+            Debug.Log("Setting slot is false");
+        }
     }
 }

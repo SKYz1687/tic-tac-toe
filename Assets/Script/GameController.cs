@@ -35,49 +35,72 @@ public class GameController : MonoBehaviour {
     //    }
     //}
 
+    public bool SetMap(int loc)
+    {
+        if (loc > 8) return false;
+        if (loc < 0) return false;
+        if (map[loc] != 0) return false;
+
+        map[loc] = playerSide;
+
+        return true;
+    }
+
     public int GetPlayerSide () {
         return playerSide;
     }
-
-    public void EndTurn () {
+    public void CheckWin()
+    {
         moveCount++;
-        if (map[0] == playerSide && map[1] == playerSide && map[2] == playerSide) {
-            GameOver ();
+        if (map[0] == playerSide && map[1] == playerSide && map[2] == playerSide)
+        {
+            GameOver();
         }
 
-        if (map[3] == playerSide && map[4] == playerSide && map[5] == playerSide) {
-            GameOver ();
+        if (map[3] == playerSide && map[4] == playerSide && map[5] == playerSide)
+        {
+            GameOver();
         }
 
-        if (map[6] == playerSide && map[7] == playerSide && map[8] == playerSide) {
-            GameOver ();
+        if (map[6] == playerSide && map[7] == playerSide && map[8] == playerSide)
+        {
+            GameOver();
         }
 
-        if (map[0] == playerSide && map[3] == playerSide && map[6] == playerSide) {
-            GameOver ();
+        if (map[0] == playerSide && map[3] == playerSide && map[6] == playerSide)
+        {
+            GameOver();
         }
 
-        if (map[1] == playerSide && map[4] == playerSide && map[7] == playerSide) {
-            GameOver ();
+        if (map[1] == playerSide && map[4] == playerSide && map[7] == playerSide)
+        {
+            GameOver();
         }
 
-        if (map[2] == playerSide && map[5] == playerSide && map[8] == playerSide) {
-            GameOver ();
+        if (map[2] == playerSide && map[5] == playerSide && map[8] == playerSide)
+        {
+            GameOver();
         }
 
-        if (map[0] == playerSide && map[4] == playerSide && map[8] == playerSide) {
-            GameOver ();
+        if (map[0] == playerSide && map[4] == playerSide && map[8] == playerSide)
+        {
+            GameOver();
         }
 
-        if (map[2] == playerSide && map[4] == playerSide && map[6] == playerSide) {
-            GameOver ();
+        if (map[2] == playerSide && map[4] == playerSide && map[6] == playerSide)
+        {
+            GameOver();
         }
 
-        if (moveCount >= 9) {
-            SetGameOverText ("It's a draw!");
+        if (moveCount >= 9)
+        {
+            SetGameOverText("It's a draw!");
         }
-
-        ChangeSides ();
+    }
+    public void EndTurn () 
+    {
+        CheckWin();
+        ChangeSides();
     }
 
     void ChangeSides () {
