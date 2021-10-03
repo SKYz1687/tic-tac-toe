@@ -127,13 +127,16 @@ public class GameController : MonoBehaviour {
         {
             GameOver();
         }
-        if(IsWin() == 0)
+        else if (IsWin() == 0)
         {
             Debug.Log("Draw");
             StartGame();
         }
-        IsWin();
-        ChangeSides();
+        else
+        {
+            IsWin();
+            ChangeSides();
+        }    
     }
 
     void ChangeSides () {
