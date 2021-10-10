@@ -3,33 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameController : MonoBehaviour {
-    public Text[] buttonList;
-    public GameObject gameOverPanel;
-    public Text gameOverText;
+public class GameController : MonoBehaviour
+{
 
     [SerializeField] UIController uIController;
 
     private int moveCount;
+    private int playerSide = 1;
+    private int[] map;
 
-    private int playerSide;
+    public int[] Map
+    {
+        get {
+            return map;
+        }
+    }
 
-    int[] map;
 
-    void Awake () {
-        //SetGameControllerReferenceOnButtons();
-        
-
-        //gameOverPanel.SetActive (false);
-        
-
+    private void Awake ()
+    {
         map = new int[9];
         StartGame();
     }
+
+
     public void StartGame()
     {
         uIController.ResetButton();
-        playerSide = 1;
+        //playerSide = 1;
         moveCount = 0;
 
         //clear
@@ -39,14 +40,6 @@ public class GameController : MonoBehaviour {
         }
     }
 
-
-    //void SetGameControllerReferenceOnButtons()
-    //{
-    //    for (int i = 0; i < buttonList.Length; i++)
-    //    {
-    //        buttonList[i].GetComponentInParent<GridSpace>().SetGameControllerReference(this);
-    //    }
-    //}
 
     public bool SetMap(int loc)
     {
@@ -59,9 +52,12 @@ public class GameController : MonoBehaviour {
         return true;
     }
 
-    public int GetPlayerSide () {
+
+    public int GetPlayerSide ()
+    {
         return playerSide;
     }
+
 
     /// <summary>
     /// 
@@ -71,89 +67,47 @@ public class GameController : MonoBehaviour {
     /// retrun 0 if draw
     /// retrun -1 if not finished
     /// </returns>
-    public int IsWin()
+    public int IsWin(int[] map, int side)
     {
-        if (map[0] == playerSide && map[1] == playerSide && map[2] == playerSide)
-        {
-            return 1;
-        }
+        if (map[0] == side && map[1] == side && map[2] == side) return 1;
+        if (map[3] == side && map[4] == side && map[5] == side) return 1;
+        if (map[6] == side && map[7] == side && map[8] == side) return 1;
+        if (map[0] == side && map[3] == side && map[6] == side) return 1;
+        if (map[1] == side && map[4] == side && map[7] == side) return 1;
+        if (map[2] == side && map[5] == side && map[8] == side) return 1;
+        if (map[0] == side && map[4] == side && map[8] == side) return 1;
+        if (map[2] == side && map[4] == side && map[6] == side) return 1;
 
-        if (map[3] == playerSide && map[4] == playerSide && map[5] == playerSide)
-        {
-            return 1;
-        }
-
-        if (map[6] == playerSide && map[7] == playerSide && map[8] == playerSide)
-        {
-            return 1;
-        }
-
-        if (map[0] == playerSide && map[3] == playerSide && map[6] == playerSide)
-        {
-            return 1;
-        }
-
-        if (map[1] == playerSide && map[4] == playerSide && map[7] == playerSide)
-        {
-            return 1;
-        }
-
-        if (map[2] == playerSide && map[5] == playerSide && map[8] == playerSide)
-        {
-            return 1;
-        }
-
-        if (map[0] == playerSide && map[4] == playerSide && map[8] == playerSide)
-        {
-            return 1;
-        }
-
-        if (map[2] == playerSide && map[4] == playerSide && map[6] == playerSide)
-        {
-            return 1;
-        }
-
-        if (moveCount >= 9)
-        {
-            return 0;
-        }
+        if (moveCount >= 9) return 0;
 
         return -1;
     }
+
+
     public void EndTurn () 
     {
         moveCount++;
-        if(IsWin() == 1)
+        if(IsWin(map, playerSide) == 1)
         {
-            GameOver();
+            print(playerSide + " Wins!");
+            StartGame();
         }
-        else if (IsWin() == 0)
+        else if (IsWin(map, playerSide) == 0)
         {
             Debug.Log("Draw");
             StartGame();
         }
         else
         {
-            IsWin();
             ChangeSides();
-        }    
+        }
     }
 
-    void ChangeSides () {
+
+    void ChangeSides ()
+    {
         playerSide = (playerSide == 1) ? 2 : 1;
     }
 
-    void GameOver () {
-        print (playerSide + " Wins!");
-        StartGame();
-        // for (int i = 0; i < buttonList.Length; i++) {
-        //     buttonList[i].GetComponentInParent<Button> ().interactable = false;
-        // }
-        // SetGameOverText (playerSide + " Wins!");
-    }
 
-    void SetGameOverText (string value) {
-        // gameOverPanel.SetActive (true);
-        // gameOverText.text = value;
-    }
 }
