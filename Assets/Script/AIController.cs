@@ -5,16 +5,18 @@ using UnityEngine;
 public class AIController : MonoBehaviour
 {
 
-    [SerializeField] private GridSpace[] gridspaces;
-    [SerializeField] private int playerSide;
     [SerializeField] private GameController gameController;
 
-    public float thinkTime = 1f;
+    [SerializeField] private GridSpace[] gridspaces;
+    [SerializeField] private int playerSide;
+
+    [SerializeField] private int phi = 1000;
+    [SerializeField] private float thinkTime = 1f;
+    [SerializeField] private float alpha = 0.5f;
 
     private float currentTime = 0f;
-    
 
-    Dictionary<int, float> qtable;
+    private Dictionary<int, float> qtable;
         
     int GetHashCode(int[] values)
     {
@@ -29,13 +31,7 @@ public class AIController : MonoBehaviour
     }
 
 
-    private void Awake()
-    {
-        qtable = new Dictionary<int, float>();
-    }
-
-
-    int[] GetBlankSpace()
+    private int[] GetBlankSpace()
     {
         List<int> blankspaces = new List<int>();
 
@@ -49,15 +45,7 @@ public class AIController : MonoBehaviour
 
         return blankspaces.ToArray();
     }
-
-    int Explore(int[] blankSpaces)
-    {
-        int index = Random.Range(0, blankSpaces.Length);
-
-        return blankSpaces[index];
-    }
-
-    public float alpha = 0.5f;
+    
 
     int[] GetNewMapAt( int slot )
     {
@@ -68,68 +56,80 @@ public class AIController : MonoBehaviour
         return mymap;
     }
 
-    int Exploit(int[] blankSpaces)
+
+    private bool IsWin(int[] map)
     {
-
-        float currentQValue = 0f;
-        int currentHash = GetHashCode(gameController.Map);
-        if( qtable.ContainsKey(currentHash))
-        {
-            currentQValue = qtable[currentHash];
-        }
-
-        float[] nextmoveQvalues = new float[blankSpaces.Length];
-
-        for (int i = 0; i < blankSpaces.Length; i++)
-        {
-            int[] mymap = new int[9];
-            gameController.Map.CopyTo(mymap, 0);
-
-            mymap[blankSpaces[i]] = playerSide;
-
-            int hash = GetHashCode(mymap);
-            float nextQvalue = 0;
-            
-            if( qtable.ContainsKey(hash))
-            {
-                nextQvalue = qtable[hash];    
-            }
-
-            nextmoveQvalues[i] = nextQvalue;
-        }
+        return gameController.IsWin(map, playerSide) == 1;
+    }
 
 
-        float max = -1000f;
+    private int GetMaxIndex(float[] values)
+    {
+        float max = Mathf.NegativeInfinity;
         int maxIndex = 0;
-        for (int i = 0; i < nextmoveQvalues.Length; i++)
+        for (int i = 0; i < values.Length; i++)
         {
-            if(nextmoveQvalues[i] > max)
+            if (values[i] > max)
             {
-                max = nextmoveQvalues[i];
+                max = values[i];
                 maxIndex = i;
             }
         }
 
+        return maxIndex;
+    }
 
-        int[] mymap2 = GetNewMapAt(blankSpaces[maxIndex]);
-        int hash2 = GetHashCode(mymap2);
 
-        if (gameController.IsWin(mymap2, playerSide) == 1)
+    private int Exploit(int[] blankSpaces)
+    {
+
+        // get possible qvalues for all next stages
+        float[] nextmoveQvalues = new float[blankSpaces.Length];
+
+        for (int i = 0; i < blankSpaces.Length; i++)
         {
-            qtable[hash2] = 100;
+            int[] tempMap = GetNewMapAt(blankSpaces[i]);
+            int hash = GetHashCode(tempMap);
+            float nextQvalue = qtable.ContainsKey(hash)?qtable[hash]:0f;    
+
+            nextmoveQvalues[i] = nextQvalue;
         }
 
-        float newQvalue = nextmoveQvalues[maxIndex];
-        qtable[currentHash] = (1.0f - alpha) * currentQValue + (alpha) * newQvalue;
+        // Find maximum qvalue
+        int maxIndex = GetMaxIndex(nextmoveQvalues);
+
+
+        // Give a reward (100) if the player win
+        int[] mapInNextMove = GetNewMapAt(blankSpaces[maxIndex]);
+        if (IsWin(mapInNextMove))
+        {
+            qtable[GetHashCode(mapInNextMove)] = 100;
+        }
+
+        //todo how about losing?
+        //???
+
+        // Update qtable
+        float currentQValue = 0f;
+        int currentHash = GetHashCode(gameController.Map);
+        currentQValue = qtable.ContainsKey(currentHash)? qtable[currentHash]:0 ;
+        
+        qtable[currentHash] = (1.0f - alpha) * currentQValue + (alpha) * nextmoveQvalues[maxIndex];
         
 
         return blankSpaces[maxIndex];
     }
 
-    //todo
-    public int phi = 1000;
 
-    void PickSpot()
+    private int Explore(int[] blankSpaces)
+    {
+        int index = Random.Range(0, blankSpaces.Length);
+
+        return blankSpaces[index];
+    }
+
+
+    private void PickSpot()
     {
 
         int[] blankSpaces = GetBlankSpace();
@@ -140,7 +140,10 @@ public class AIController : MonoBehaviour
         {
             print("explore " + playerSide.ToString() );
             space = Explore(blankSpaces);
+
+            // there are 2% chance that the AI picks randomly
             phi--;
+            phi = phi < 2 ? 2 : phi;
         }
         else
         {
@@ -150,6 +153,12 @@ public class AIController : MonoBehaviour
 
         gridspaces[space].SetSpace(space);
         
+    }
+
+
+    private void Awake()
+    {
+        qtable = new Dictionary<int, float>();
     }
 
 
