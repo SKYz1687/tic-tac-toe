@@ -234,6 +234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9db195fa69594d248846bcc5634f946, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameController: {fileID: 1238492630}
   gridspaces:
   - {fileID: 1486385486}
   - {fileID: 1013434647}
@@ -245,10 +246,9 @@ MonoBehaviour:
   - {fileID: 813196682}
   - {fileID: 335326434}
   playerSide: 2
-  gameController: {fileID: 1238492630}
+  phi: 50000
   thinkTime: 0.01
   alpha: 0.8
-  phi: 100000
 --- !u!4 &132110525
 Transform:
   m_ObjectHideFlags: 0
@@ -960,6 +960,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9db195fa69594d248846bcc5634f946, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameController: {fileID: 1238492630}
   gridspaces:
   - {fileID: 1486385486}
   - {fileID: 1013434647}
@@ -971,10 +972,9 @@ MonoBehaviour:
   - {fileID: 813196682}
   - {fileID: 335326434}
   playerSide: 1
-  gameController: {fileID: 1238492630}
-  thinkTime: 0.01
+  phi: 30
+  thinkTime: 1
   alpha: 0.8
-  phi: 100000
 --- !u!4 &695258363
 Transform:
   m_ObjectHideFlags: 0
